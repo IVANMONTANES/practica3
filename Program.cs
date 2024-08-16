@@ -1,116 +1,81 @@
 ﻿using clases;
-using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
-
-//creamos la lista de tareas pendientes//
-List<Tarea> tareaPendientes = new List<Tarea>();
-//creamos la lista de tareas realizadas//
-List<Tarea> tareaRealizadas = new List<Tarea>();
-
-//creamos una interfaz para cargar las tareas y marcarlas como realizadas//
+Calculadora calculadora = new Calculadora();
 bool seguir = true;
-//usamos esta variable para el id//
-int id = 1;
 do{
-Console.WriteLine("1: cargar tarea pendiente");
-Console.WriteLine("2: establecer tarea como realizada");
-Console.WriteLine("3: Buscar tareas pendientes por descripcion");
-Console.WriteLine("4: mostrar tareas pendientes");
-Console.WriteLine("5: motrar tareas realizadas");
-Console.WriteLine("6: salir");
-string elegirCadena = Console.ReadLine();
-int elegir = 0;
-    if(int.TryParse(elegirCadena,out elegir)){
-            switch(elegir){
-                case 1:
-                    Console.WriteLine("ingrese la descripcion de la tarea:");
-                    string descripcion = Console.ReadLine();
-                    
-                    int duracion = 0;
-                    bool esNumero = true;
-                    while(esNumero){
-                        Console.WriteLine("ingrese la duracion de la tarea:");
-                        string DuracionCadena = Console.ReadLine();
-                        if(int.TryParse(DuracionCadena,out duracion)){
-                            esNumero = false;
-                        }
-                        else{
-                            Console.WriteLine("no se ingreso una duracion valida");
-                        }
+    double resultadoAnterior = calculadora.Resultado;
+    double nuevoValor;
+    TipoOperacion operacion;
+    double resultado;
+    Console.WriteLine("1 sumar");
+    Console.WriteLine("2 restar");
+    Console.WriteLine("3 multiplicar");
+    Console.WriteLine("4 dividir");
+    Console.WriteLine("5 limpiar");
+    Console.WriteLine("6 mostrar historial");
+    Console.WriteLine("7 salir");
+    Console.WriteLine("eliga una opcion:");
+    string opcionCadena = Console.ReadLine();
+    int opcion = 0;
+    if(int.TryParse(opcionCadena, out opcion)){
+        if(opcion >= 1 && opcion <= 5){
+            if(opcion != 5){
+            Console.WriteLine("ingrese un numero");
+            string numeroCadena = Console.ReadLine();
+            double numero;
+            if(double.TryParse(numeroCadena,out numero)){
+                switch(opcion){
+                    case 1:
+                        nuevoValor = numero;
+                        operacion = TipoOperacion.Suma; 
+                        calculadora.Sumar(numero); 
+                        resultado = calculadora.Resultado;
+                        calculadora.Historial.Add(new Operaciones(resultadoAnterior,nuevoValor,operacion,resultado));  
+                    break;
+                    case 2: 
+                        nuevoValor = numero;
+                        operacion = TipoOperacion.Resta; 
+                        calculadora.Restar(numero);
+                        resultado = calculadora.Resultado;
+                        calculadora.Historial.Add(new Operaciones(resultadoAnterior,nuevoValor,operacion,resultado)); 
+                    break;
+                    case 3: 
+                        nuevoValor = numero;
+                        operacion = TipoOperacion.Multiplicacion; 
+                        calculadora.Multiplicar(numero); 
+                        resultado = calculadora.Resultado;
+                        calculadora.Historial.Add(new Operaciones(resultadoAnterior,nuevoValor,operacion,resultado));
+                    break;
+                    case 4: 
+                    calculadora.Dividir(numero); 
+                    if(numero != 0){
+                        nuevoValor = numero;
+                        operacion = TipoOperacion.Division;
+                        resultado = calculadora.Resultado;
+                        calculadora.Historial.Add(new Operaciones(resultadoAnterior,nuevoValor,operacion,resultado));
                     }
-                    tareaPendientes.Add(new Tarea(id,descripcion,duracion));
-                    id++;
-                break;
-
-                case 2:
-                    foreach(var tarea in tareaPendientes){
-                        tarea.mostrarTarea();
-                    }
-                    Console.WriteLine("ingrese el id:");
-                    string elegirTareaCadena = Console.ReadLine();
-                    int elegirTarea = 0;
-                    int indiceTarea=0,contador = 0,encontro1 = 0;
-                    if(int.TryParse(elegirTareaCadena,out elegirTarea)){
-                            foreach(var tarea in tareaPendientes){
-                                if(elegirTarea == tarea.TareaId){
-                                    indiceTarea = contador;
-                                    encontro1 = 1;
-                                }
-                                contador++;
-                            }
-                            if(encontro1 == 0){
-                                Console.WriteLine("no se indico un indice valido");
-                            }
-                            else{
-                            tareaRealizadas.Add(tareaPendientes[indiceTarea]);
-                            tareaPendientes.RemoveAt(indiceTarea);
-                            }
-                    }
-                    else{
-                        Console.WriteLine("no se indico un numero");
-                    }
-                break;
-
-                case 3:
-                    Console.WriteLine("ingrese una descripcion:");
-                    string descripcion2 = Console.ReadLine();
-                    int encontro2 = 0;
-                    foreach(var tarea in tareaPendientes){
-                        if(tarea.Descripcion.Contains(descripcion2)){
-                            tarea.mostrarTarea();
-                            encontro2 = 1;
-                        }
-                    }
-                    if(encontro2 == 0){
-                        Console.WriteLine("no existe una tarea pendiente con esa descripcion");
-                    }
-                break;
-
-                case 4:
-                    if(tareaPendientes.Count == 0){
-                        Console.WriteLine("no hay tareas pendientes");
-                    }
-                    else{
-                    Console.WriteLine("----------TAREAS PENDIENTES-----------");
-                    foreach(var tarea in tareaPendientes){
-                        tarea.mostrarTarea();
-                    }}
-                break;
-
-                case 5:
-                    if(tareaRealizadas.Count == 0){
-                        Console.WriteLine("no se marcaron tareas como realizadas");
-                    }else{
-                    Console.WriteLine("----------TAREAS REALIZADAS-----------");
-                    foreach(var tarea in tareaRealizadas){
-                        tarea.mostrarTarea();
-                    }}
-                break;
-                case 6:
-                default:
-                seguir = false;
-                Console.WriteLine("saliendo...");
-                break;
+                    break;
+                    case 6:
+                        calculadora.mostrarHistorial();
+                    break;
+                }
             }
-        }
-    }while(seguir);
+            }else{
+                nuevoValor = 0;
+                operacion = TipoOperacion.Limpiar;
+                calculadora.Limpiar();
+                resultado = calculadora.Resultado;
+                calculadora.Historial.Add(new Operaciones(resultadoAnterior,nuevoValor,operacion,resultado));
+            }
+            Console.WriteLine("valor Actual: "+calculadora.Resultado);
+        }else if(opcion == 6){
+            calculadora.mostrarHistorial();
+        }else if(opcion == 7){
+        Console.WriteLine("saliendo");
+        seguir = false;
+    }else{
+        Console.WriteLine("no se indico una opcion valida");
+    } 
+    }else{
+        Console.WriteLine("no se indico un numero");
+    }
+}while(seguir);
